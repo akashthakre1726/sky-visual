@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#090909">
+<title>SKY VISUAL | Show Booking Calendar</title>
+<style>
+:root{--bg:#080808;--panel:#141414;--gold:#e4bd68;--gold2:#8d6a2c;--text:#f6f2e9;--muted:#aaa49a;--green:#73c78c;--purple:#c6a0e9;--red:#e4bd68}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#211a0d 0,#080808 52%);color:var(--text);font:16px/1.45 system-ui,-apple-system,Segoe UI,sans-serif}
+.wrap{max-width:850px;margin:auto;padding:20px 14px 40px}.hero{text-align:center;padding:24px 12px 18px;border:1px solid #5d4824;border-radius:20px;background:linear-gradient(145deg,#17130c,#090909 70%);box-shadow:0 12px 40px #0008}
+.brand{font-weight:900;letter-spacing:.14em;font-size:clamp(26px,6vw,42px);color:var(--gold)}.tag{color:#c6b58f;font-size:11px;letter-spacing:.14em}.hero h1{font-size:clamp(19px,4vw,27px);margin:15px 0 4px}.hero p{color:var(--muted);margin:0;font-size:14px}
+.panel{margin-top:16px;background:#111;border:1px solid #30271a;border-radius:18px;padding:16px}.months{display:flex;gap:8px;margin-bottom:16px}.months button,.action{border:1px solid #665027;background:#18150f;color:var(--gold);padding:11px 14px;border-radius:10px;font-weight:700;cursor:pointer}.months button{flex:1}.months button.active,.action.primary{background:linear-gradient(135deg,#e5c477,#a87b2b);color:#15110a;border-color:#e5c477}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:16px}.stat{background:#191919;border-radius:12px;padding:12px}.stat span{display:block;color:var(--muted);font-size:11px;letter-spacing:.08em}.stat strong{display:block;color:var(--gold);font-size:25px;margin-top:2px}
+.calendar{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:5px}.weekday{text-align:center;color:#c8a65e;font-size:11px;font-weight:800;padding:6px 0}.day{min-height:62px;border:1px solid #302e29;border-radius:10px;background:#171717;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;cursor:pointer;font-size:15px}.day:disabled{visibility:hidden}.day.selected{outline:2px solid var(--gold);background:#392b14}.day.booked{border-color:#98752f;background:#2b2213}.day.tentative{border-color:#795d91;background:#211a29}.dot{width:6px;height:6px;border-radius:50%;background:var(--green)}.booked .dot{background:var(--gold)}.tentative .dot{background:var(--purple)}
+.legend{display:flex;gap:14px;flex-wrap:wrap;margin-top:12px;color:#bbb;font-size:12px}.legend i{display:inline-block;width:7px;height:7px;border-radius:50%;margin-right:5px}.legend .a{background:var(--green)}.legend .b{background:var(--gold)}.legend .t{background:var(--purple)}
+h2{font-size:18px;color:var(--gold);margin:0 0 10px}.selected-date{font-weight:700;margin-bottom:12px}.status-options{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.status-options button{background:#1a1a1a;color:#ddd;border:1px solid #393939;border-radius:10px;padding:10px 5px;cursor:pointer;font-size:12px}.status-options button.chosen{border-color:var(--gold);color:var(--gold);background:#2b2213}
+label{display:block;color:#c9c1b4;font-size:12px;margin:12px 0 5px}input,textarea{width:100%;background:#090909;color:#fff;border:1px solid #39342b;border-radius:10px;padding:12px;font:inherit}textarea{resize:vertical}.buttons{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}.buttons .action{flex:1;min-width:130px}.notice{font-size:12px;color:#aaa49a;margin:12px 0 0}.saved{color:#9dd8a6;font-size:13px;margin-top:10px}.contact{text-align:center;padding:20px 8px 5px}.contact h2{font-size:20px}.contact p{color:#c4c0b8;font-size:13px}.contact a{color:var(--gold);font-weight:800;text-decoration:none;border:1px solid #6e552a;border-radius:10px;padding:10px 16px;display:inline-block}.footer{text-align:center;color:#777;font-size:11px;margin-top:20px}
+@media(max-width:420px){.wrap{padding:12px 9px 28px}.panel{padding:12px}.day{min-height:48px;border-radius:7px}.calendar{gap:3px}.status-options{grid-template-columns:1fr}.stats{gap:5px}.stat{padding:10px}.stat strong{font-size:22px}}
+</style>
+</head>
+<body>
+<main class="wrap">
+<header class="hero">
+  <div class="brand">✦ SKY VISUAL</div>
+  <div class="tag">LIVE VISUALS · DJ SHOWS · LED WALLS</div>
+  <h1>SHOW BOOKING CALENDAR</h1>
+  <p>Check dates · Manage bookings · Own the stage</p>
+</header>
+<section class="panel">
+  <div class="months">
+    <button id="octBtn" class="active" type="button">OCT 2026</button>
+    <button id="novBtn" type="button">NOV 2026</button>
+  </div>
+  <div class="stats">
+    <div class="stat"><span>BOOKED</span><strong id="bookedCount">0</strong></div>
+    <div class="stat"><span>TENTATIVE</span><strong id="tentativeCount">0</strong></div>
+    <div class="stat"><span>AVAILABLE</span><strong id="availableCount">0</strong></div>
+  </div>
+  <div id="calendar" class="calendar" aria-label="Booking calendar"></div>
+  <div class="legend"><span><i class="a"></i>Available</span><span><i class="b"></i>Booked</span><span><i class="t"></i>Tentative</span></div>
+</section>
+<section class="panel">
+  <h2>Manage selected date</h2>
+  <div class="selected-date" id="selectedDate"></div>
+  <div class="status-options">
+    <button type="button" data-status="Available" class="chosen">● Available</button>
+    <button type="button" data-status="Booked">✓ Booked</button>
+    <button type="button" data-status="Tentative">◷ Tentative</button>
+  </div>
+  <label for="event">Show / event name</label><input id="event" placeholder="e.g. Garba Night / DJ Show">
+  <label for="venue">Venue / city</label><input id="venue" placeholder="e.g. Nagpur">
+  <label for="notes">Client / timing / notes</label><textarea id="notes" rows="2" placeholder="Add any useful details"></textarea>
+  <div class="buttons">
+    <button class="action primary" id="save" type="button">Save date details</button>
+    <button class="action" id="copy" type="button">Copy booking details</button>
+  </div>
+  <div id="message" class="saved" aria-live="polite"></div>
+  <p class="notice">Important: dates and notes save only in this browser on this device. This is a static calendar; it does not sync with clients or other devices. Confirm bookings directly with SKY VISUAL.</p>
+</section>
+<section class="panel contact">
+  <h2>BOOK YOUR NEXT SHOW</h2>
+  <p>Live VJ · DJ Logo Animation · 3D Typography · LED Wall Visuals · Stage Events</p>
+  <a href="https://www.instagram.com/vjaakashthakre/" target="_blank" rel="noopener">Instagram: @vjaakashthakre ↗</a>
+</section>
+<div class="footer">SKY VISUAL © 2026</div>
+</main>
+<script>
+(() => {
+  const KEY='skyvisual-booking-calendar-v1';
+  let month=10, selected='2026-10-26', status='Available', entries={};
+  try { entries=JSON.parse(localStorage.getItem(KEY)||'{}')||{}; } catch(e) { entries={}; }
+  const $=id=>document.getElementById(id);
+  const pad=n=>String(n).padStart(2,'0');
+  const keyFor=d=>`2026-${pad(month)}-${pad(d)}`;
+  const pretty=key=>new Date(key+'T12:00:00').toLocaleDateString('en-IN',{weekday:'long',day:'numeric',month:'long',year:'numeric'});
+  function saveLocal(){try{localStorage.setItem(KEY,JSON.stringify(entries));}catch(e){}}
+  function render(){
+    $('octBtn').classList.toggle('active',month===10);
+    $('novBtn').classList.toggle('active',month===11);
+    const cal=$('calendar'); cal.innerHTML='';
+    ['SUN','MON','TUE','WED','THU','FRI','SAT'].forEach(w=>{
+      const el=document.createElement('div');el.className='weekday';el.textContent=w;cal.appendChild(el);
+    });
+    const first=new Date(2026,month-1,1).getDay(), count=new Date(2026,month,0).getDate();
+    for(let i=0;i<first;i++){const blank=document.createElement('button');blank.className='day';blank.disabled=true;blank.setAttribute('aria-hidden','true');cal.appendChild(blank);}
+    let booked=0,tentative=0;
+    for(let d=1;d<=count;d++){
+      const k=keyFor(d), item=entries[k]||{}, st=item.status||'Available';
+      if(st==='Booked')booked++; if(st==='Tentative')tentative++;
+      const b=document.createElement('button');b.type='button';b.className='day'+(st==='Booked'?' booked':st==='Tentative'?' tentative':'')+(selected===k?' selected':'');
+      b.innerHTML='<span>'+d+'</span><span class="dot"></span>';
+      b.setAttribute('aria-label',`${pretty(k)}: ${st}`);
+      b.addEventListener('click',()=>{selected=k;loadSelected();render();});
+      cal.appendChild(b);
+    }
+    $('bookedCount').textContent=booked;$('tentativeCount').textContent=tentative;$('availableCount').textContent=count-booked-tentative;
+    $('selectedDate').textContent=pretty(selected);
+  }
+  function loadSelected(){
+    const item=entries[selected]||{};
+    status=item.status||'Available';
+    $('event').value=item.event||'';$('venue').value=item.venue||'';$('notes').value=item.notes||'';
+    document.querySelectorAll('[data-status]').forEach(b=>b.classList.toggle('chosen',b.dataset.status===status));
+    $('message').textContent='';
+  }
+  document.querySelectorAll('[data-status]').forEach(b=>b.addEventListener('click',()=>{
+    status=b.dataset.status;
+    document.querySelectorAll('[data-status]').forEach(x=>x.classList.toggle('chosen',x===b));
+  }));
+  $('octBtn').addEventListener('click',()=>{month=10;selected='2026-10-01';loadSelected();render();});
+  $('novBtn').addEventListener('click',()=>{month=11;selected='2026-11-01';loadSelected();render();});
+  $('save').addEventListener('click',()=>{
+    entries[selected]={status,event:$('event').value.trim(),venue:$('venue').value.trim(),notes:$('notes').value.trim()};
+    saveLocal();render();$('message').textContent='Saved on this device. Remember: this does not sync to other devices.';
+  });
+  $('copy').addEventListener('click',async()=>{
+    const item=entries[selected]||{};
+    const text=`SKY VISUAL — SHOW BOOKING\nDate: ${pretty(selected)}\nStatus: ${status}\nShow: ${$('event').value}\nVenue: ${$('venue').value}\nNotes: ${$('notes').value}\nInstagram: @vjaakashthakre`;
+    try{await navigator.clipboard.writeText(text);$('message').textContent='Booking details copied.';}
+    catch(e){const ta=document.createElement('textarea');ta.value=text;document.body.appendChild(ta);ta.select();document.execCommand('copy');ta.remove();$('message').textContent='Booking details copied (if prompted, allow clipboard access).';}
+  });
+  loadSelected();render();
+})();
+</script>
+</body>
+</html>
